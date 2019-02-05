@@ -49,6 +49,18 @@ $middleware = [
 ```
 
 ## Local development
+Add Datadog keys to docker/config/consul/app.yml
+```
+$SERVICE_FAMILY_KV_PATH$/statsd/host: datadog
+$SERVICE_FAMILY_KV_PATH$/statsd/port: 8125
+```
+
+And same keys to docker/config/env.ctmpl
+```
+STATSD_HOST={{ key "SERVICE_FAMILY_KV_PATH/statsd/host" }}
+STATSD_PORT={{ key "SERVICE_FAMILY_KV_PATH/statsd/port" }}
+```
+
 Add datadog agent for your docker-compose.yml file
 ```yaml
 datadog:
