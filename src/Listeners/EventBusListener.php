@@ -34,19 +34,20 @@ class EventBusListener
     public function handle($event) : void
     {
         if ($event instanceof \AirSlate\Event\Events\ProcessedEvent) {
-            $this->datadog->increment('airslate.eventbus.receive', 1, [
+            $this->datadog->timing('airslate.eventbus.receive', $this->getConsumerDuration($event), 1, [
                 'key' => $event->getRoutingKey(),
                 'queue' => $event->getQueueName(),
                 'status' => 'processed',
             ]);
         } elseif ($event instanceof \AirSlate\Event\Events\RejectedEvent) {
-            $this->datadog->increment('airslate.eventbus.receive', 1, [
+            $this->datadog->timing('airslate.eventbus.receive', $this->getConsumerDuration($event), 1, [
                 'key' => $event->getRoutingKey(),
                 'queue' => $event->getQueueName(),
                 'status' => 'rejected',
             ]);
         } elseif ($event instanceof \AirSlate\Event\Events\RetryEvent) {
-            $this->datadog->increment('airslate.eventbus.receive', 1, [
+            $duration = 0.0; // measure only count of retries
+            $this->datadog->timing('airslate.eventbus.receive', $duration, 1, [
                 'key' => $event->getRoutingKey(),
                 'queue' => $event->getQueueName(),
                 'status' => 'retried',
@@ -84,5 +85,16 @@ class EventBusListener
                 'connection' => $event->job->getConnectionName(),
             ]);
         }
+    }
+
+    /**
+     * @param mixed $event
+     * @return float
+     */
+    private function getConsumerDuration($event): float
+    {
+        return method_exists($event, $event->getConsumerProcessDuration())
+            ? (float) $event->getConsumerProcessDuration()
+            : 0.0;
     }
 }
