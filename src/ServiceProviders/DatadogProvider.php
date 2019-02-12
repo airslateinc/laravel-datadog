@@ -14,7 +14,7 @@ use Illuminate\Support\ServiceProvider;
  */
 class DatadogProvider extends ServiceProvider
 {
-    public function boot()
+    public function boot(): void
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
@@ -36,9 +36,7 @@ class DatadogProvider extends ServiceProvider
             return $datadog;
         });
 
-        $datadog->addTag('env', $config['environment']);
         $datadog->addTag('app', $config['application_name']);
-        $datadog->addTag('ver', $config['application_version']);
 
         $this->registerRouteMatchedListener($datadog);
     }
@@ -59,16 +57,7 @@ class DatadogProvider extends ServiceProvider
     private function registerRouteMatchedListener(Datadog $datadog): void
     {
         $this->app->make('router')->matched(function(RouteMatched $matched) use ($datadog) {
-            $operationName = sprintf(
-                '%s/%s/%s',
-                strtoupper($matched->request->getScheme()),
-                $matched->request->method(),
-                $matched->route->uri
-            );
-
-            $datadog->addTag('url', $operationName);
-
-            return $operationName;
+            $datadog->addTag('url', $matched->route->uri);
         });
     }
 }

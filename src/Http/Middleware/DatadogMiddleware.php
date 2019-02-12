@@ -54,9 +54,6 @@ class DatadogMiddleware
             'method' => $request->method(),
         ];
 
-        // send response count
-        $this->datadog->increment('airslate.response_count', 1, $tags, 1);
-
         // send response time
         $this->datadog->timing('airslate.response_time', $duration, 1, $tags);
     }

@@ -38,13 +38,6 @@ composer require airslate/laravel-datadog
 php artisan vendor:publish --tag=datadog
 ```
 
-### Change environment tag in config/datadog.php
-
-You must set correct environment tag
-```php
-'environment' => explode('-', env('SERVICE_NAME', 'as-dev'))[1],
-```
-
 ### Add middleware. 
 Datadog middleware must be last in your middleware list.
 
