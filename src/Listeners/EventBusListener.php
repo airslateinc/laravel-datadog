@@ -61,28 +61,24 @@ class EventBusListener
                 'queue' => $event->getQueueName(),
             ]);
         } elseif ($event instanceof \Illuminate\Queue\Events\JobProcessing) {
-            $this->datadog->increment('airslate.queue.processed', 1, [
-                'name' => $event->job->getName(),
-                'queue' => $event->job->getQueue(),
+            $this->datadog->increment('airslate.queue.job', 1, [
                 'connection' => $event->job->getConnectionName(),
+                'status' => 'processing',
             ]);
         } elseif ($event instanceof \Illuminate\Queue\Events\JobProcessed) {
-            $this->datadog->increment('airslate.queue.processed', 1, [
-                'name' => $event->job->getName(),
-                'queue' => $event->job->getQueue(),
+            $this->datadog->increment('airslate.queue.job', 1, [
                 'connection' => $event->job->getConnectionName(),
+                'status' => 'processed',
             ]);
         } elseif ($event instanceof \Illuminate\Queue\Events\JobExceptionOccurred) {
-            $this->datadog->increment('airslate.queue.processed', 1, [
-                'name' => $event->job->getName(),
-                'queue' => $event->job->getQueue(),
+            $this->datadog->increment('airslate.queue.job', 1, [
                 'connection' => $event->job->getConnectionName(),
+                'status' => 'exceptionOccurred',
             ]);
         } elseif ($event instanceof \Illuminate\Queue\Events\JobFailed) {
-            $this->datadog->increment('airslate.queue.processed', 1, [
-                'name' => $event->job->getName(),
-                'queue' => $event->job->getQueue(),
+            $this->datadog->increment('airslate.queue.job', 1, [
                 'connection' => $event->job->getConnectionName(),
+                'status' => 'failed',
             ]);
         }
     }

@@ -54,13 +54,8 @@ class DatadogMiddleware
             'method' => $request->method(),
         ];
 
-        /*
-        // send response size
-        $this->datadog->gauge('airslate.request_size', strlen($request->getContent()), 1, $tags);
-
-        // send response size
-        $this->datadog->gauge('airslate.response_size', strlen($response->getContent()), 1, $tags);
-        */
+        // send response count
+        $this->datadog->increment('airslate.response_count', 1, $tags, 1);
 
         // send response time
         $this->datadog->timing('airslate.response_time', $duration, 1, $tags);
