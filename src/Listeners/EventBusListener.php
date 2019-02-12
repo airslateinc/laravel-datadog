@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace AirSlate\Datadog\Listeners;
 
 use AirSlate\Datadog\Services\Datadog;
+use AirSlate\Datadog\Services\QueueJobMeter;
 
 /**
  * Class EventBusListener
@@ -15,23 +16,30 @@ class EventBusListener
     /**
      * @var Datadog
      */
-    private $datadog;
+    protected $datadog;
+
+    /**
+     * @var QueueJobMeter
+     */
+    protected $meter;
 
     /**
      * EventBusListener constructor.
      *
      * @param Datadog $datadog
+     * @param QueueJobMeter $meter
      */
-    public function __construct(Datadog $datadog)
+    public function __construct(Datadog $datadog, QueueJobMeter $meter)
     {
         $this->datadog = $datadog;
+        $this->meter = $meter;
     }
 
     /**
      * @param mixed $event
      * @throws \Exception
      */
-    public function handle($event) : void
+    public function handle($event): void
     {
         if ($event instanceof \AirSlate\Event\Events\ProcessedEvent) {
             $this->datadog->timing('airslate.eventbus.receive', $this->getDuration($event), 1, [
@@ -60,23 +68,17 @@ class EventBusListener
                 'queue' => $event->getQueueName(),
             ]);
         } elseif ($event instanceof \Illuminate\Queue\Events\JobProcessing) {
-            $this->datadog->increment('airslate.queue.job', 1, [
-                'connection' => $event->job->getConnectionName(),
-                'status' => 'processing',
-            ]);
+            $this->meter->start($event->job);
         } elseif ($event instanceof \Illuminate\Queue\Events\JobProcessed) {
-            $this->datadog->increment('airslate.queue.job', 1, [
-                'connection' => $event->job->getConnectionName(),
+            $this->datadog->timing('airslate.queue.job', $this->meter->stop($event->job), [
                 'status' => 'processed',
             ]);
         } elseif ($event instanceof \Illuminate\Queue\Events\JobExceptionOccurred) {
-            $this->datadog->increment('airslate.queue.job', 1, [
-                'connection' => $event->job->getConnectionName(),
+            $this->datadog->timing('airslate.queue.job', $this->meter->stop($event->job), [
                 'status' => 'exceptionOccurred',
             ]);
         } elseif ($event instanceof \Illuminate\Queue\Events\JobFailed) {
-            $this->datadog->increment('airslate.queue.job', 1, [
-                'connection' => $event->job->getConnectionName(),
+            $this->datadog->timing('airslate.queue.job', $this->meter->stop($event->job), [
                 'status' => 'failed',
             ]);
         }

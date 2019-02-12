@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace AirSlate\Datadog\ServiceProviders;
 
 use AirSlate\Datadog\Services\Datadog;
+use AirSlate\Datadog\Services\QueueJobMeter;
 use Illuminate\Routing\Events\RouteMatched;
 use Illuminate\Support\ServiceProvider;
 
@@ -32,8 +33,12 @@ class DatadogProvider extends ServiceProvider
             'port' => $config['statsd_port'] ?? 8125,
         ]);
 
-        $this->app->singleton(Datadog::class, function() use ($datadog) {
+        $this->app->singleton(Datadog::class, function() use ($datadog): Datadog {
             return $datadog;
+        });
+
+        $this->app->singleton(QueueJobMeter::class, function(): QueueJobMeter {
+            return new QueueJobMeter();
         });
 
         $datadog->addTag('app', $config['application_name']);
