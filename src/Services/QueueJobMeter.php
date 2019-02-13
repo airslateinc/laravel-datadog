@@ -27,7 +27,7 @@ class QueueJobMeter
      */
     public function start(Job $job): void
     {
-        $this->jobStarted = microtime();
+        $this->jobStarted = microtime(true);
         $this->previousId = $job->getJobId();
     }
 
