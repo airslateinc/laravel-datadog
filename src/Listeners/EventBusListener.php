@@ -70,15 +70,15 @@ class EventBusListener
         } elseif ($event instanceof \Illuminate\Queue\Events\JobProcessing) {
             $this->meter->start($event->job);
         } elseif ($event instanceof \Illuminate\Queue\Events\JobProcessed) {
-            $this->datadog->timing('airslate.queue.job', $this->meter->stop($event->job), [
+            $this->datadog->timing('airslate.queue.job', $this->meter->stop($event->job), 1, [
                 'status' => 'processed',
             ]);
         } elseif ($event instanceof \Illuminate\Queue\Events\JobExceptionOccurred) {
-            $this->datadog->timing('airslate.queue.job', $this->meter->stop($event->job), [
+            $this->datadog->timing('airslate.queue.job', $this->meter->stop($event->job), 1, [
                 'status' => 'exceptionOccurred',
             ]);
         } elseif ($event instanceof \Illuminate\Queue\Events\JobFailed) {
-            $this->datadog->timing('airslate.queue.job', $this->meter->stop($event->job), [
+            $this->datadog->timing('airslate.queue.job', $this->meter->stop($event->job), 1, [
                 'status' => 'failed',
             ]);
         }
