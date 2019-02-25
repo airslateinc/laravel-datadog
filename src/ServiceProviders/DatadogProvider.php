@@ -41,7 +41,7 @@ class DatadogProvider extends ServiceProvider
             return new QueueJobMeter();
         });
 
-        $datadog->addTag('app', $config['application_name']);
+        $datadog->addTag('app', $config['application_name'] ?? 'unknown');
 
         $this->registerRouteMatchedListener($datadog);
     }
