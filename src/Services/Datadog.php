@@ -22,7 +22,7 @@ class Datadog extends DogStatsd
      */
     public function send($data, $sampleRate = 1.0, $tags = null): void
     {
-        $tags = $this->prepareTags(is_array($tags) ? $tags : null);
+        $tags = $this->prepareTags(is_array($tags) ? $tags : []);
         parent::send($data, $sampleRate, $tags);
 
         $this->sendToStatsd($data, $sampleRate, $tags);
@@ -44,11 +44,11 @@ class Datadog extends DogStatsd
     /**
      * @param $data
      * @param float $sampleRate
-     * @param null $tags
+     * @param array|null $tags
      *
      * @return void
      */
-    protected function sendToStatsd($data, $sampleRate = 1.0, $tags = null): void
+    protected function sendToStatsd($data, $sampleRate = 1.0, array $tags = null): void
     {
         $statsd = new Statsd();
 
@@ -58,11 +58,11 @@ class Datadog extends DogStatsd
     }
 
     /**
-     * @param array|null $tags
+     * @param array $tags
      *
      * @return array
      */
-    private function prepareTags(?array $tags): array
+    private function prepareTags(array $tags): array
     {
         return array_merge($this->tags, $tags);
     }

@@ -30,7 +30,7 @@ class Statsd extends DogStatsd
      */
     public function send($data, $sampleRate = 1.0, $tags = null): void
     {
-        $tags = $this->prepareTags(is_array($tags) ? $tags : null);
+        $tags = $this->prepareTags(is_array($tags) ? $tags : []);
         parent::send($data, $sampleRate, $tags);
     }
 
@@ -72,11 +72,11 @@ class Statsd extends DogStatsd
     }
 
     /**
-     * @param array|null $tags
+     * @param array $tags
      *
      * @return array
      */
-    private function prepareTags(?array $tags): array
+    private function prepareTags(array $tags): array
     {
         return array_merge($this->tags, $tags);
     }
