@@ -6,16 +6,24 @@ namespace AirSlate\Datadog\Services;
 use DataDog\DogStatsd;
 
 /**
- * Class Datadog
+ * Class Statsd
  *
  * @package AirSlate\Datadog\Services
  */
-class Datadog extends DogStatsd
+class Statsd extends DogStatsd
 {
     /**
      * @var array
      */
     private $tags = [];
+
+    /**
+     * Statsd constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct($this->getConfig());
+    }
 
     /**
      * {@inheritdoc}
@@ -24,8 +32,6 @@ class Datadog extends DogStatsd
     {
         $tags = $this->prepareTags(is_array($tags) ? $tags : null);
         parent::send($data, $sampleRate, $tags);
-
-        $this->sendToStatsd($data, $sampleRate, $tags);
     }
 
     /**
@@ -42,19 +48,27 @@ class Datadog extends DogStatsd
     }
 
     /**
-     * @param $data
-     * @param float $sampleRate
-     * @param null $tags
-     *
-     * @return void
+     * @return array
      */
-    protected function sendToStatsd($data, $sampleRate = 1.0, $tags = null): void
+    protected function getConfig(): array
     {
-        $statsd = new Statsd();
+        $config = [];
 
-        $statsd->addTag('env', env('APP_ENV'));
+        $statsdUrl = env('STATSD_URL', null);
 
-        $statsd->send($data, $sampleRate, $tags);
+        if ($statsdUrl) {
+            $statsdUrl = parse_url($statsdUrl);
+
+            if (isset($statsdUrl['host'])) {
+                $config['host'] = $statsdUrl['host'];
+            }
+
+            if (isset($statsdUrl['port'])) {
+                $config['port'] = $statsdUrl['port'];
+            }
+        }
+
+        return $config;
     }
 
     /**
