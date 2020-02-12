@@ -79,14 +79,22 @@ class EventBusListener
         } elseif ($event instanceof \Illuminate\Queue\Events\JobProcessed) {
             $this->datadog->timing("{$this->namespace}.queue.job", $this->meter->stop($event->job), 1, [
                 'status' => 'processed',
+                'queue' => $event->job->getQueue(),
+                'job_class' => $event->job->resolveName()
             ]);
         } elseif ($event instanceof \Illuminate\Queue\Events\JobExceptionOccurred) {
             $this->datadog->timing("{$this->namespace}.queue.job", $this->meter->stop($event->job), 1, [
                 'status' => 'exceptionOccurred',
+                'queue' => $event->job->getQueue(),
+                'job_class' => $event->job->resolveName(),
+                'error_class' => get_class($event->exception)
             ]);
         } elseif ($event instanceof \Illuminate\Queue\Events\JobFailed) {
             $this->datadog->timing("{$this->namespace}.queue.job", $this->meter->stop($event->job), 1, [
                 'status' => 'failed',
+                'queue' => $event->job->getQueue(),
+                'job_class' => $event->job->resolveName(),
+                'error_class' => get_class($event->exception)
             ]);
         } elseif ($event instanceof \Illuminate\Cache\Events\CacheHit) {
             $this->datadog->increment("{$this->namespace}.cache.item", 1, [
