@@ -34,5 +34,8 @@
                 "AirSlate\\Datadog\\ServiceProviders\\EventServiceProvider"
             ]
         }
+    },
+    "config": {
+        "discard-changes": true
     }
 }
