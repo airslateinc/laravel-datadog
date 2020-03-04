@@ -132,13 +132,16 @@ class EventBusListener
     }
 
     /**
-     * @param $classNameOrObject
+     * @param string $alias
      * @return string
      * @throws \ReflectionException
      */
-    private function getClassShortName($classNameOrObject): string
+    private function getClassShortName(string $alias): string
     {
-        return (new \ReflectionClass($classNameOrObject))->getShortName();
+        if (class_exists($alias)) {
+            return (new \ReflectionClass($alias))->getShortName();
+        }
+        return $alias;
     }
 
     /**
