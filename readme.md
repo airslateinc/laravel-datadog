@@ -45,7 +45,7 @@ Datadog middleware must be last in your middleware list.
 ```php
 $middleware = [
     // ...
-    \AirSlate\Datadog\Http\Middleware\DatadogMiddlware::class,
+    \AirSlate\Datadog\Http\Middleware\DatadogMiddleware::class,
 ];
 ```
 
