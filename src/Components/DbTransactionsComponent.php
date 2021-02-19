@@ -25,7 +25,7 @@ class DbTransactionsComponent extends ComponentAbstract
         });
 
         $this->listen(TransactionRolledBack::class, function (): void {
-            $this->statsd->increment($this->getStat("db.transaction"), 1, [
+            $this->statsd->increment($this->getStat('db.transaction'), 1, [
                 'status' => 'rollback',
             ]);
         });
