@@ -95,7 +95,5 @@ class JobQueryCounterComponent extends ComponentAbstract
             1,
             $tags
         );
-
-        $this->counterManager->clearCounter($name);
     }
 }
