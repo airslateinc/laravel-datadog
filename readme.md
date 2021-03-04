@@ -5,7 +5,7 @@ This library makes it simple to integrate Datadog into your laravel project
 ## Requirements
 
 - PHP >= 7.1
-- Laravel Framework ^5.6, ^6.0, ^7.0
+- Laravel Framework ^5.6, ^6.0, ^7.0, ^8.0
 
 ## Installation
 
