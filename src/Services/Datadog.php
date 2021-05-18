@@ -7,7 +7,6 @@ namespace AirSlate\Datadog\Services;
 use DataDog\DogStatsd;
 use Illuminate\Support\Facades\Config;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Throwable;
 
 class Datadog extends DogStatsd
@@ -19,10 +18,14 @@ class Datadog extends DogStatsd
      */
     protected $logger;
 
-    public function __construct(array $config = array())
+    /**
+     * Datadog constructor.
+     * @param mixed[] $config
+     */
+    public function __construct(array $config = [])
     {
         parent::__construct($config);
-        $this->logger = $this->logger ?? function_exists('logger') ? logger() : new NullLogger();
+        $this->logger = app('log');
     }
 
     /**
@@ -36,8 +39,10 @@ class Datadog extends DogStatsd
         try {
             parent::send($data, $sampleRate, $tags);
         } catch (Throwable $exception) {
-            $this->logger->error($exception);
-            $this->logger->warning('Could not send data to Datadog Statsd');
+            $this->logger->error(
+                'Could not send data to Datadog Statsd',
+                ['exception' => $exception]
+            );
         }
     }
 
@@ -54,8 +59,10 @@ class Datadog extends DogStatsd
                 $this->increment($stat, $sampleRate, $tags);
             }
         } catch (Throwable $exception) {
-            $this->logger->error($exception);
-            $this->logger->warning('Could not send timing data to Datadog Statsd');
+            $this->logger->error(
+                'Could not send timing data to Datadog Statsd',
+                ['exception' => $exception]
+            );
         }
     }
 
